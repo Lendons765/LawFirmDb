@@ -1,0 +1,69 @@
+EXECUTE AS USER = 'Dr_House';
+
+SELECT * FROM Medical.Patients;
+SELECT * FROM Medical.Doctors;
+
+UPDATE Medical.Patients
+SET Diagnosis = 'Severe Flu'
+WHERE PatientID = 1;
+
+SELECT * FROM Administration.Staff;  -- should FAIL
+SELECT * FROM Billing.Invoices;      -- should FAIL
+
+REVERT;
+
+
+EXECUTE AS USER = 'Nurse_Ratchet';
+
+SELECT * FROM Medical.Patients;
+SELECT * FROM Medical.Doctors;
+
+UPDATE Medical.Patients
+SET Diagnosis = 'Cancer'
+WHERE PatientID = 1;   -- should FAIL
+
+SELECT * FROM Administration.Staff;  -- FAIL
+SELECT * FROM Billing.Invoices;      -- FAIL
+
+REVERT;
+
+
+EXECUTE AS USER = 'Admin_Perry';
+
+SELECT * FROM Administration.Staff;
+
+
+UPDATE Administration.Staff
+SET Salary = 90000
+WHERE StaffID = 3;
+
+SELECT * FROM Medical.Patients;  -- FAIL
+SELECT * FROM Billing.Invoices;  -- FAIL
+
+REVERT;
+
+
+
+EXECUTE AS USER = 'Billing_Gus';
+
+SELECT * FROM Billing.Invoices;
+SELECT * FROM Billing.Insurance;
+
+SELECT * FROM Billing.PatientView;
+
+SELECT * FROM Medical.Patients; -- FAIL
+
+REVERT;
+
+
+EXECUTE AS USER = 'Auditor_Freeman';
+
+SELECT * FROM Medical.Patients;
+SELECT * FROM Administration.Staff;
+SELECT * FROM Billing.Invoices;
+
+UPDATE Medical.Patients
+SET Diagnosis = 'Test'
+WHERE PatientID = 1;  -- FAIL
+
+REVERT;
