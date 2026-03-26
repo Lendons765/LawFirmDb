@@ -1,0 +1,817 @@
+CREATE DATABASE LawEirmDB;
+GO
+USE LawfirmdB;
+GO
+
+ 
+CREATE SCHEMA Clients;
+GO 
+
+CREATE SCHEMA Cases; 
+GO 
+
+CREATE SCHEMA Documents; 
+GO 
+
+CREATE SCHEMA Billing; 
+GO 
+
+CREATE SCHEMA HR; 
+GO
+
+
+
+
+CREATE TABLE Clients.ContactInfo (
+    ClientID INT,
+    Name VARCHAR(100),
+    Phone VARCHAR(20),
+    Email VARCHAR(100),
+    SSN CHAR(11)
+);
+
+CREATE TABLE Clients.Matters (
+    MatterID INT,
+    ClientID INT,
+    Description VARCHAR(255),
+    OpenDate DATE,
+    Status VARCHAR(50)
+);
+
+CREATE TABLE Cases.CaseDetails (
+    CaseID INT,
+    MatterID INT,
+    CaseName VARCHAR(100),
+    Jurisdiction VARCHAR(100),
+    Judge VARCHAR(100)
+);
+
+CREATE TABLE Cases.CaseNotes (
+    NoteID INT,
+    CaseID INT,
+    AttorneyID INT,
+    NoteText TEXT,
+    NoteDate DATE
+);
+
+CREATE TABLE Documents.Docs (
+    DocID INT,
+    MatterID INT,
+    DocName VARCHAR(255),
+    DocContent VARBINARY(MAX), -- Assuming binary for actual files
+    CreatedDate DATE
+);
+
+CREATE TABLE Documents.DocAccess (
+    AccessID INT,
+    DocID INT,
+    UserID INT,
+    AccessLevel VARCHAR(50)
+); -- For granular doc permissions
+
+CREATE TABLE Billing.TimeEntries (
+    EntryID INT,
+    AttorneyID INT,
+    MatterID INT,
+    Hours DECIMAL(5,2),
+    Rate DECIMAL(10,2),
+    Description VARCHAR(255)
+);
+
+CREATE TABLE Billing.Invoices (
+    InvoiceID INT,
+    ClientID INT,
+    MatterID INT,
+    Amount DECIMAL(15,2),
+    IssueDate DATE,
+    Paid BIT
+);
+
+CREATE TABLE HR.Attorneys (
+    AttorneyID INT,
+    Name VARCHAR(100),
+    BarNumber VARCHAR(50),
+    Specialization VARCHAR(100),
+    Salary DECIMAL(15,2)
+);
+
+CREATE TABLE HR.SupportStaff (
+    StaffID INT,
+    Name VARCHAR(100),
+    Role VARCHAR(50),
+    Salary DECIMAL(15,2)
+);
+
+
+CREATE USER Attorney_Sheldon WITHOUT LOGIN;
+CREATE USER Paralegal_Penny WITHOUT LOGIN;
+CREATE USER Partner_Lesley WITHOUT LOGIN;
+CREATE USER Partner_Lesley WITHOUT LOGIN;
+CREATE USER IT_Stuart WITHOUT LOGIN;
+CREATE USER Accountant_Kripke WITHOUT LOGIN;
+
+CREATE ROLE Attorneys;
+CREATE ROLE Paralegals;
+CREATE ROLE Partners;
+CREATE ROLE ITAdmins;
+CREATE ROLE Accountants;
+
+
+EXEC sp_addrolemember 'Attorneys', 'Attorney_Sheldon';
+EXEC sp_addrolemember 'Paralegals', 'Paralegal_Penny';
+EXEC sp_addrolemember 'Partners', 'Partner_Lesley';
+EXEC sp_addrolemember 'ITAdmins', 'IT_Stuart';
+EXEC sp_addrolemember 'Accountants', 'Accountant_Kripke';
+
+EXEC sp_addrolemember 'Attorneys', 'Partner_Lesley';
+
+
+
+
+
+
+INSERT INTO Clients.ContactInfo (ClientID, Name, Phone, Email, SSN)
+VALUES
+(1,'Juan Dela Cruz','09171234567','juan@lawmail.com','123-45-6789'),
+(2,'Maria Santos','09181234567','maria@lawmail.com','234-56-7890'),
+(3,'Pedro Reyes','09191234567','pedro@lawmail.com','345-67-8901'),
+(4,'Ana Garcia','09201234567','ana@lawmail.com','456-78-9012'),
+(5,'Luis Mendoza','09211234567','luis@lawmail.com','567-89-0123'),
+(6,'Carla Bautista','09221234567','carla@lawmail.com','678-90-1234'),
+(7,'Miguel Torres','09231234567','miguel@lawmail.com','789-01-2345'),
+(8,'Sofia Ramos','09241234567','sofia@lawmail.com','890-12-3456'),
+(9,'Daniel Cruz','09251234567','daniel@lawmail.com','901-23-4567'),
+(10,'Angela Flores','09261234567','angela@lawmail.com','012-34-5678'),
+(11,'Ramon Villanueva','09271234567','ramon@lawmail.com','111-11-1111'),
+(12,'Catherine Lopez','09281234567','catherine@lawmail.com','222-22-2222'),
+(13,'Jose Fernandez','09291234567','jose@lawmail.com','333-33-3333'),
+(14,'Patricia Gomez','09301234567','patricia@lawmail.com','444-44-4444'),
+(15,'Roberto Castillo','09311234567','roberto@lawmail.com','555-55-5555'),
+(16,'Marianne Aquino','09321234567','marianne@lawmail.com','666-66-6666'),
+(17,'Victor Navarro','09331234567','victor@lawmail.com','777-77-7777'),
+(18,'Theresa Herrera','09341234567','theresa@lawmail.com','888-88-8888'),
+(19,'Eduardo Salazar','09351234567','eduardo@lawmail.com','999-99-9999'),
+(20,'Beatriz Delgado','09361234567','beatriz@lawmail.com','101-10-1010'),
+(21,'Francisco Ortega','09371234567','francisco@lawmail.com','202-20-2020'),
+(22,'Lourdes Valencia','09381234567','lourdes@lawmail.com','303-30-3030'),
+(23,'Ricardo Dominguez','09391234567','ricardo@lawmail.com','404-40-4040'),
+(24,'Gloria Mercado','09401234567','gloria@lawmail.com','505-50-5050'),
+(25,'Antonio Espino','09411234567','antonio@lawmail.com','606-60-6060'),
+(26,'Feliza Paredes','09421234567','feliza@lawmail.com','707-70-7070'),
+(27,'Carlos Robles','09431234567','carlos@lawmail.com','808-80-8080'),
+(28,'Nestor Bautista','09441234567','nestor@lawmail.com','909-90-9090'),
+(29,'Isabel Fuentes','09451234567','isabel@lawmail.com','111-22-3333'),
+(30,'Mario Aguilar','09461234567','mario@lawmail.com','222-33-4444'),
+(31,'Rosa Manalo','09471234567','rosa@lawmail.com','333-44-5555'),
+(32,'Gilbert Santos','09481234567','gilbert@lawmail.com','444-55-6666'),
+(33,'Hannah Cruz','09491234567','hannah@lawmail.com','555-66-7777'),
+(34,'Ernesto Velasco','09501234567','ernesto@lawmail.com','666-77-8888'),
+(35,'Paolo Mendoza','09511234567','paolo@lawmail.com','777-88-9999'),
+(36,'Diana Navarro','09521234567','diana@lawmail.com','888-99-0000'),
+(37,'Leonardo Ramos','09531234567','leonardo@lawmail.com','999-00-1111'),
+(38,'Camille Torres','09541234567','camille@lawmail.com','123-12-1234'),
+(39,'Jerome Reyes','09551234567','jerome@lawmail.com','234-23-2345'),
+(40,'Bianca Flores','09561234567','bianca@lawmail.com','345-34-3456'),
+(41,'Alfred Garcia','09571234567','alfred@lawmail.com','456-45-4567'),
+(42,'Karen Lopez','09581234567','karen@lawmail.com','567-56-5678'),
+(43,'Dominic Tan','09591234567','dominic@lawmail.com','678-67-6789'),
+(44,'Vanessa Cruz','09601234567','vanessa@lawmail.com','789-78-7890'),
+(45,'Bryan Santos','09611234567','bryan@lawmail.com','890-89-8901'),
+(46,'Jasmine Reyes','09621234567','jasmine@lawmail.com','901-90-9012'),
+(47,'Kevin Bautista','09631234567','kevin@lawmail.com','321-21-4321'),
+(48,'Nicole Ramos','09641234567','nicole@lawmail.com','432-32-5432'),
+(49,'Patrick Lim','09651234567','patrick@lawmail.com','543-43-6543'),
+(50,'Chloe Tan','09661234567','chloe@lawmail.com','654-54-7654');
+
+
+
+INSERT INTO Clients.Matters VALUES
+(1,1,'Breach of Contract','2025-01-01','Open'),
+(2,2,'Property Ownership Dispute','2025-01-02','Open'),
+(3,3,'Divorce Proceedings','2025-01-03','Closed'),
+(4,4,'Fraud Investigation','2025-01-04','Open'),
+(5,5,'Tax Evasion Case','2025-01-05','Open'),
+(6,6,'Labor Complaint','2025-01-06','Closed'),
+(7,7,'Civil Damages','2025-01-07','Open'),
+(8,8,'Criminal Defense','2025-01-08','Open'),
+(9,9,'Land Title Dispute','2025-01-09','Closed'),
+(10,10,'Corporate Merger','2025-01-10','Open'),
+
+(11,11,'Insurance Claim','2025-01-11','Open'),
+(12,12,'Lease Agreement Issue','2025-01-12','Open'),
+(13,13,'Child Custody','2025-01-13','Closed'),
+(14,14,'Cybercrime Case','2025-01-14','Open'),
+(15,15,'Intellectual Property','2025-01-15','Open'),
+(16,16,'Workplace Harassment','2025-01-16','Closed'),
+(17,17,'Debt Collection','2025-01-17','Open'),
+(18,18,'Drug Case Defense','2025-01-18','Open'),
+(19,19,'Boundary Dispute','2025-01-19','Closed'),
+(20,20,'Business Contract Review','2025-01-20','Open'),
+
+(21,21,'Bankruptcy Filing','2025-01-21','Open'),
+(22,22,'Employment Contract','2025-01-22','Open'),
+(23,23,'Adoption Case','2025-01-23','Closed'),
+(24,24,'Online Scam Case','2025-01-24','Open'),
+(25,25,'Patent Filing','2025-01-25','Open'),
+(26,26,'Wrongful Termination','2025-01-26','Closed'),
+(27,27,'Loan Dispute','2025-01-27','Open'),
+(28,28,'Theft Case','2025-01-28','Open'),
+(29,29,'Land Inheritance','2025-01-29','Closed'),
+(30,30,'Startup Legal Setup','2025-01-30','Open'),
+
+(31,31,'Medical Negligence','2025-02-01','Open'),
+(32,32,'Rental Dispute','2025-02-02','Open'),
+(33,33,'Annulment Case','2025-02-03','Closed'),
+(34,34,'Identity Theft','2025-02-04','Open'),
+(35,35,'Trademark Case','2025-02-05','Open'),
+(36,36,'Workplace Injury','2025-02-06','Closed'),
+(37,37,'Credit Dispute','2025-02-07','Open'),
+(38,38,'Assault Defense','2025-02-08','Open'),
+(39,39,'Property Inheritance','2025-02-09','Closed'),
+(40,40,'Partnership Agreement','2025-02-10','Open'),
+
+(41,41,'Environmental Case','2025-02-11','Open'),
+(42,42,'Tenant Issue','2025-02-12','Open'),
+(43,43,'Child Support','2025-02-13','Closed'),
+(44,44,'Fraudulent Transaction','2025-02-14','Open'),
+(45,45,'Business Registration','2025-02-15','Open'),
+(46,46,'Labor Arbitration','2025-02-16','Closed'),
+(47,47,'Loan Default','2025-02-17','Open'),
+(48,48,'Robbery Case','2025-02-18','Open'),
+(49,49,'Lot Ownership','2025-02-19','Closed'),
+(50,50,'Corporate Compliance','2025-02-20','Open');
+
+
+
+INSERT INTO Cases.CaseDetails VALUES
+(1,1,'Dela Cruz vs ABC Corp','RTC Cebu','Judge Ramirez'),
+(2,2,'Santos Property Case','RTC Manila','Judge Lopez'),
+(3,3,'Reyes Divorce','Family Court','Judge Cruz'),
+(4,4,'Garcia Fraud Case','RTC Davao','Judge Lim'),
+(5,5,'Mendoza Tax Case','BIR Court','Judge Santos'),
+(6,6,'Bautista Labor Case','NLRC','Judge Reyes'),
+(7,7,'Torres Civil Case','RTC Cebu','Judge Garcia'),
+(8,8,'Ramos Criminal Case','RTC QC','Judge Tan'),
+(9,9,'Cruz Land Case','RTC Laguna','Judge Flores'),
+(10,10,'Flores Corporate Case','SEC Court','Judge Ong'),
+(11,11,'Villanueva Insurance Case','RTC Cebu','Judge Cruz'),
+(12,12,'Lopez Lease Case','RTC Manila','Judge Tan'),
+(13,13,'Fernandez Custody','Family Court','Judge Garcia'),
+(14,14,'Gomez Cybercrime','RTC QC','Judge Reyes'),
+(15,15,'Castillo IP Case','IP Court','Judge Lim'),
+(16,16,'Aquino Workplace Case','NLRC','Judge Santos'),
+(17,17,'Navarro Debt Case','RTC Cebu','Judge Flores'),
+(18,18,'Herrera Drug Case','RTC QC','Judge Ong'),
+(19,19,'Salazar Boundary Case','RTC Laguna','Judge Cruz'),
+(20,20,'Delgado Business Case','SEC Court','Judge Tan'),
+(21,21,'Ortega Bankruptcy','RTC Manila','Judge Garcia'),
+(22,22,'Valencia Employment','NLRC','Judge Lim'),
+(23,23,'Dominguez Adoption','Family Court','Judge Cruz'),
+(24,24,'Mercado Online Scam','RTC QC','Judge Reyes'),
+(25,25,'Espino Patent Filing','IP Court','Judge Tan'),
+(26,26,'Paredes Wrongful Termination','NLRC','Judge Santos'),
+(27,27,'Robles Loan Dispute','RTC Cebu','Judge Flores'),
+(28,28,'Bautista Theft Case','RTC QC','Judge Ong'),
+(29,29,'Fuentes Land Inheritance','RTC Laguna','Judge Cruz'),
+(30,30,'Aguilar Startup Legal','SEC Court','Judge Garcia'),
+(31,31,'Manalo Medical Negligence','RTC Manila','Judge Tan'),
+(32,32,'Santos Rental Dispute','NLRC','Judge Reyes'),
+(33,33,'Cruz Annulment','Family Court','Judge Cruz'),
+(34,34,'Velasco Identity Theft','RTC QC','Judge Lim'),
+(35,35,'Mendoza Trademark','IP Court','Judge Santos'),
+(36,36,'Navarro Workplace Injury','NLRC','Judge Flores'),
+(37,37,'Ramos Credit Dispute','RTC Cebu','Judge Ong'),
+(38,38,'Torres Assault Defense','RTC QC','Judge Tan'),
+(39,39,'Flores Property Inheritance','RTC Laguna','Judge Cruz'),
+(40,40,'Delgado Partnership Agreement','SEC Court','Judge Garcia'),
+(41,41,'Garcia Environmental Case','RTC Manila','Judge Lim'),
+(42,42,'Lopez Tenant Issue','NLRC','Judge Reyes'),
+(43,43,'Tan Child Support','Family Court','Judge Cruz'),
+(44,44,'Cruz Fraudulent Transaction','RTC QC','Judge Tan'),
+(45,45,'Santos Business Registration','SEC Court','Judge Garcia'),
+(46,46,'Reyes Labor Arbitration','NLRC','Judge Lim'),
+(47,47,'Bautista Loan Default','RTC Cebu','Judge Flores'),
+(48,48,'Ramos Robbery Case','RTC QC','Judge Ong'),
+(49,49,'Lim Lot Ownership','RTC Laguna','Judge Cruz'),
+(50,50,'Tan Corporate Compliance','SEC Court','Judge Garcia');
+
+
+
+INSERT INTO Cases.CaseNotes VALUES
+(1,1,1,'Initial consultation completed',GETDATE()),
+(2,2,2,'Documents submitted',GETDATE()),
+(3,3,3,'Case closed successfully',GETDATE()),
+(4,4,4,'Evidence under review',GETDATE()),
+(5,5,5,'Filed complaint',GETDATE()),
+(6,6,6,'Hearing scheduled',GETDATE()),
+(7,7,7,'Witness statements collected',GETDATE()),
+(8,8,8,'Defense strategy prepared',GETDATE()),
+(9,9,9,'Land survey requested',GETDATE()),
+(10,10,10,'Contract review completed',GETDATE()),
+(11,11,11,'Insurance forms processed',GETDATE()),
+(12,12,12,'Lease documents verified',GETDATE()),
+(13,13,13,'Custody hearing held',GETDATE()),
+(14,14,14,'Cybercrime evidence collected',GETDATE()),
+(15,15,15,'Patent documents filed',GETDATE()),
+(16,16,16,'Employee complaint reviewed',GETDATE()),
+(17,17,17,'Debt records analyzed',GETDATE()),
+(18,18,18,'Drug testing submitted',GETDATE()),
+(19,19,19,'Boundary confirmed',GETDATE()),
+(20,20,20,'Business contracts reviewed',GETDATE()),
+(21,21,21,'Bankruptcy petition filed',GETDATE()),
+(22,22,22,'Employment contract signed',GETDATE()),
+(23,23,23,'Adoption papers prepared',GETDATE()),
+(24,24,24,'Online scam reported',GETDATE()),
+(25,25,25,'Patent review completed',GETDATE()),
+(26,26,26,'Termination documents analyzed',GETDATE()),
+(27,27,27,'Loan application checked',GETDATE()),
+(28,28,28,'Theft case evidence prepared',GETDATE()),
+(29,29,29,'Inheritance verified',GETDATE()),
+(30,30,30,'Startup contracts reviewed',GETDATE()),
+(31,31,31,'Medical records examined',GETDATE()),
+(32,32,32,'Rental contract reviewed',GETDATE()),
+(33,33,33,'Annulment processed',GETDATE()),
+(34,34,34,'Identity fraud documented',GETDATE()),
+(35,35,35,'Trademark registered',GETDATE()),
+(36,36,36,'Workplace injury documented',GETDATE()),
+(37,37,37,'Credit history checked',GETDATE()),
+(38,38,38,'Assault case analyzed',GETDATE()),
+(39,39,39,'Inheritance documents prepared',GETDATE()),
+(40,40,40,'Partnership agreement drafted',GETDATE()),
+(41,41,41,'Environmental impact report collected',GETDATE()),
+(42,42,42,'Tenant complaint filed',GETDATE()),
+(43,43,43,'Child support calculated',GETDATE()),
+(44,44,44,'Fraudulent transaction analyzed',GETDATE()),
+(45,45,45,'Business registration completed',GETDATE()),
+(46,46,46,'Labor arbitration concluded',GETDATE()),
+(47,47,47,'Loan default verified',GETDATE()),
+(48,48,48,'Robbery investigation filed',GETDATE()),
+(49,49,49,'Lot ownership verified',GETDATE()),
+(50,50,50,'Corporate compliance reviewed',GETDATE());
+
+
+
+INSERT INTO Documents.Docs VALUES
+(1,1,'Contract.pdf',NULL,GETDATE()),
+(2,2,'PropertyTitle.pdf',NULL,GETDATE()),
+(3,3,'DivorcePapers.pdf',NULL,GETDATE()),
+(4,4,'FraudEvidence.pdf',NULL,GETDATE()),
+(5,5,'TaxDocuments.pdf',NULL,GETDATE()),
+(6,6,'LaborComplaint.pdf',NULL,GETDATE()),
+(7,7,'CivilCaseFiles.pdf',NULL,GETDATE()),
+(8,8,'CriminalDefense.pdf',NULL,GETDATE()),
+(9,9,'LandTitle.pdf',NULL,GETDATE()),
+(10,10,'CorporateDocs.pdf',NULL,GETDATE()),
+(11,11,'InsuranceForms.pdf',NULL,GETDATE()),
+(12,12,'LeaseAgreement.pdf',NULL,GETDATE()),
+(13,13,'CustodyDocuments.pdf',NULL,GETDATE()),
+(14,14,'CybercrimeEvidence.pdf',NULL,GETDATE()),
+(15,15,'PatentDocs.pdf',NULL,GETDATE()),
+(16,16,'EmployeeComplaint.pdf',NULL,GETDATE()),
+(17,17,'DebtRecords.pdf',NULL,GETDATE()),
+(18,18,'DrugEvidence.pdf',NULL,GETDATE()),
+(19,19,'BoundarySurvey.pdf',NULL,GETDATE()),
+(20,20,'BusinessContracts.pdf',NULL,GETDATE()),
+(21,21,'BankruptcyPetition.pdf',NULL,GETDATE()),
+(22,22,'EmploymentContract.pdf',NULL,GETDATE()),
+(23,23,'AdoptionPapers.pdf',NULL,GETDATE()),
+(24,24,'OnlineScamReport.pdf',NULL,GETDATE()),
+(25,25,'PatentReview.pdf',NULL,GETDATE()),
+(26,26,'TerminationDocs.pdf',NULL,GETDATE()),
+(27,27,'LoanApplication.pdf',NULL,GETDATE()),
+(28,28,'TheftEvidence.pdf',NULL,GETDATE()),
+(29,29,'InheritanceDocs.pdf',NULL,GETDATE()),
+(30,30,'StartupContracts.pdf',NULL,GETDATE()),
+(31,31,'MedicalRecords.pdf',NULL,GETDATE()),
+(32,32,'RentalContract.pdf',NULL,GETDATE()),
+(33,33,'AnnulmentDocs.pdf',NULL,GETDATE()),
+(34,34,'IdentityFraud.pdf',NULL,GETDATE()),
+(35,35,'TrademarkDocs.pdf',NULL,GETDATE()),
+(36,36,'WorkInjuryDocs.pdf',NULL,GETDATE()),
+(37,37,'CreditHistory.pdf',NULL,GETDATE()),
+(38,38,'AssaultDocs.pdf',NULL,GETDATE()),
+(39,39,'InheritanceDocs2.pdf',NULL,GETDATE()),
+(40,40,'PartnershipAgreement.pdf',NULL,GETDATE()),
+(41,41,'EnvironmentalReport.pdf',NULL,GETDATE()),
+(42,42,'TenantComplaint.pdf',NULL,GETDATE()),
+(43,43,'ChildSupportDocs.pdf',NULL,GETDATE()),
+(44,44,'FraudAnalysis.pdf',NULL,GETDATE()),
+(45,45,'BusinessRegistration.pdf',NULL,GETDATE()),
+(46,46,'LaborArbitration.pdf',NULL,GETDATE()),
+(47,47,'LoanDefault.pdf',NULL,GETDATE()),
+(48,48,'RobberyInvestigation.pdf',NULL,GETDATE()),
+(49,49,'LotOwnershipDocs.pdf',NULL,GETDATE()),
+(50,50,'CorporateComplianceDocs.pdf',NULL,GETDATE());
+
+
+
+INSERT INTO Billing.TimeEntries VALUES
+(1,1,1,2.5,500,'Consultation'),
+(2,2,2,3.0,500,'Document Preparation'),
+(3,3,3,1.5,500,'Court Appearance'),
+(4,4,4,2.0,500,'Evidence Review'),
+(5,5,5,3.5,500,'Legal Research'),
+(6,6,6,2.5,500,'Hearing Attendance'),
+(7,7,7,2.2,500,'Case Preparation'),
+(8,8,8,3.0,500,'Defense Planning'),
+(9,9,9,2.8,500,'Client Meeting'),
+(10,10,10,3.2,500,'Contract Review'),
+(11,11,11,2.0,500,'Insurance Forms'),
+(12,12,12,2.5,500,'Lease Agreement Review'),
+(13,13,13,1.8,500,'Custody Hearing'),
+(14,14,14,2.3,500,'Cybercrime Evidence'),
+(15,15,15,2.7,500,'Patent Filing'),
+(16,16,16,2.4,500,'Employee Complaint'),
+(17,17,17,2.1,500,'Debt Collection'),
+(18,18,18,2.5,500,'Drug Case'),
+(19,19,19,2.2,500,'Boundary Survey'),
+(20,20,20,2.8,500,'Business Contract Review'),
+(21,21,21,2.6,500,'Bankruptcy Filing'),
+(22,22,22,2.3,500,'Employment Contract'),
+(23,23,23,1.9,500,'Adoption Case'),
+(24,24,24,2.4,500,'Online Scam Case'),
+(25,25,25,2.7,500,'Patent Review'),
+(26,26,26,2.1,500,'Termination Case'),
+(27,27,27,2.5,500,'Loan Dispute'),
+(28,28,28,2.0,500,'Theft Case'),
+(29,29,29,2.3,500,'Land Inheritance'),
+(30,30,30,2.6,500,'Startup Legal Setup'),
+(31,31,31,2.5,500,'Medical Negligence'),
+(32,32,32,2.4,500,'Rental Dispute'),
+(33,33,33,2.0,500,'Annulment Case'),
+(34,34,34,2.3,500,'Identity Theft'),
+(35,35,35,2.7,500,'Trademark Case'),
+(36,36,36,2.1,500,'Workplace Injury'),
+(37,37,37,2.5,500,'Credit Dispute'),
+(38,38,38,2.4,500,'Assault Defense'),
+(39,39,39,2.3,500,'Property Inheritance'),
+(40,40,40,2.6,500,'Partnership Agreement'),
+(41,41,41,2.2,500,'Environmental Case'),
+(42,42,42,2.1,500,'Tenant Issue'),
+(43,43,43,2.0,500,'Child Support'),
+(44,44,44,2.4,500,'Fraudulent Transaction'),
+(45,45,45,2.5,500,'Business Registration'),
+(46,46,46,2.2,500,'Labor Arbitration'),
+(47,47,47,2.3,500,'Loan Default'),
+(48,48,48,2.1,500,'Robbery Case'),
+(49,49,49,2.4,500,'Lot Ownership'),
+(50,50,50,2.5,500,'Corporate Compliance');
+
+
+
+INSERT INTO Billing.Invoices VALUES
+(1,1,1,1250,GETDATE(),0),
+(2,2,2,1500,GETDATE(),1),
+(3,3,3,1000,GETDATE(),0),
+(4,4,4,1200,GETDATE(),1),
+(5,5,5,1750,GETDATE(),0),
+(6,6,6,1300,GETDATE(),1),
+(7,7,7,1400,GETDATE(),0),
+(8,8,8,1600,GETDATE(),1),
+(9,9,9,1550,GETDATE(),0),
+(10,10,10,1800,GETDATE(),1),
+(11,11,11,1250,GETDATE(),0),
+(12,12,12,1500,GETDATE(),1),
+(13,13,13,1000,GETDATE(),0),
+(14,14,14,1200,GETDATE(),1),
+(15,15,15,1750,GETDATE(),0),
+(16,16,16,1300,GETDATE(),1),
+(17,17,17,1400,GETDATE(),0),
+(18,18,18,1600,GETDATE(),1),
+(19,19,19,1550,GETDATE(),0),
+(20,20,20,1800,GETDATE(),1),
+(21,21,21,1250,GETDATE(),0),
+(22,22,22,1500,GETDATE(),1),
+(23,23,23,1000,GETDATE(),0),
+(24,24,24,1200,GETDATE(),1),
+(25,25,25,1750,GETDATE(),0),
+(26,26,26,1300,GETDATE(),1),
+(27,27,27,1400,GETDATE(),0),
+(28,28,28,1600,GETDATE(),1),
+(29,29,29,1550,GETDATE(),0),
+(30,30,30,1800,GETDATE(),1),
+(31,31,31,1250,GETDATE(),0),
+(32,32,32,1500,GETDATE(),1),
+(33,33,33,1000,GETDATE(),0),
+(34,34,34,1200,GETDATE(),1),
+(35,35,35,1750,GETDATE(),0),
+(36,36,36,1300,GETDATE(),1),
+(37,37,37,1400,GETDATE(),0),
+(38,38,38,1600,GETDATE(),1),
+(39,39,39,1550,GETDATE(),0),
+(40,40,40,1800,GETDATE(),1),
+(41,41,41,1250,GETDATE(),0),
+(42,42,42,1500,GETDATE(),1),
+(43,43,43,1000,GETDATE(),0),
+(44,44,44,1200,GETDATE(),1),
+(45,45,45,1750,GETDATE(),0),
+(46,46,46,1300,GETDATE(),1),
+(47,47,47,1400,GETDATE(),0),
+(48,48,48,1600,GETDATE(),1),
+(49,49,49,1550,GETDATE(),0),
+(50,50,50,1800,GETDATE(),1);
+
+
+INSERT INTO HR.Attorneys VALUES
+(1,'Sheldon Cooper',120000),
+(2,'Leonard Hofstadter',115000),
+(3,'Howard Wolowitz',110000),
+(4,'Raj Koothrappali',108000),
+(5,'Amy Farrah Fowler',125000),
+(6,'Bernadette Rostenkowski',112000),
+(7,'Stuart Bloom',90000),
+(8,'Lesley Partner',150000),
+(9,'Emily Turner',95000),
+(10,'Daniel Kim',98000),
+(11,'Karen Smith',100000),
+(12,'Paul Johnson',102000),
+(13,'Lisa Ray',99000),
+(14,'Michael Chen',97000),
+(15,'Sarah Brown',96000),
+(16,'James Lee',94000),
+(17,'Anna White',93000),
+(18,'Peter Green',92000),
+(19,'Sophie Black',91000),
+(20,'Chris Adams',90500),
+(21,'Olivia Hill',90000),
+(22,'Ethan Scott',89500),
+(23,'Natalie Young',89000),
+(24,'Ryan Hall',88500),
+(25,'Grace Allen',88000),
+(26,'David Wright',87500),
+(27,'Hannah King',87000),
+(28,'Kevin Moore',86500),
+(29,'Isabella Clark',86000),
+(30,'Jack Lewis',85500),
+(31,'Mia Walker',85000),
+(32,'Liam Robinson',84500),
+(33,'Emma Perez',84000),
+(34,'Noah Baker',83500),
+(35,'Ava Gonzalez',83000),
+(36,'William Nelson',82500),
+(37,'Sophia Carter',82000),
+(38,'James Mitchell',81500),
+(39,'Amelia Roberts',81000),
+(40,'Benjamin Phillips',80500),
+(41,'Charlotte Evans',80000),
+(42,'Elijah Campbell',79500),
+(43,'Harper Parker',79000),
+(44,'Alexander Edwards',78500),
+(45,'Evelyn Collins',78000),
+(46,'Mason Stewart',77500),
+(47,'Abigail Sanchez',77000),
+(48,'Logan Morris',76500),
+(49,'Ella Rogers',76000),
+(50,'Jacob Reed',75500);
+
+
+INSERT INTO HR.SupportStaff VALUES
+(1,'Penny Hofstadter','Paralegal',45000),
+(2,'Stuart Bloom','IT Admin',50000),
+(3,'Kripke','Accountant',52000),
+(4,'Barry Kripke','Accountant',52000),
+(5,'Lucy Cooper','Paralegal',47000),
+(6,'Bertie Rostenkowski','Paralegal',46000),
+(7,'Mindy Simmons','IT Support',48000),
+(8,'Howard Mom','HR Support',43000),
+(9,'Mrs. Wolowitz','HR Support',42000),
+(10,'Amys Assistant','Paralegal',45000),
+(11,'Lesley Secretary','Secretary',47000),
+(12,'Emily Assistant','Paralegal',46000),
+(13,'Daniel Assistant','Paralegal',45000),
+(14,'Karen Assistant','Paralegal',44000),
+(15,'Paul Assistant','Paralegal',43000),
+(16,'Lisa Secretary','Secretary',45000),
+(17,'Michael IT','IT Support',50000),
+(18,'Sarah HR','HR Support',48000),
+(19,'James IT','IT Support',49000),
+(20,'Anna HR','HR Support',47000),
+(21,'Peter IT','IT Support',46000),
+(22,'Sophie Paralegal','Paralegal',45000),
+(23,'Chris Assistant','Paralegal',44000),
+(24,'Olivia Secretary','Secretary',43000),
+(25,'Ethan Paralegal','Paralegal',42000),
+(26,'Natalie HR','HR Support',41000),
+(27,'Ryan IT','IT Support',40000),
+(28,'Grace Paralegal','Paralegal',45000),
+(29,'David Secretary','Secretary',44000),
+(30,'Hannah Paralegal','Paralegal',43000),
+(31,'Kevin IT','IT Support',42000),
+(32,'Isabella Paralegal','Paralegal',41000),
+(33,'Jack Secretary','Secretary',40000),
+(34,'Mia IT','IT Support',43000),
+(35,'Liam Paralegal','Paralegal',42000),
+(36,'Emma HR','HR Support',41000),
+(37,'Noah IT','IT Support',40000),
+(38,'Ava Secretary','Secretary',39000),
+(39,'William Paralegal','Paralegal',38000),
+(40,'Sophia IT','IT Support',37000),
+(41,'James Secretary','Secretary',36000),
+(42,'Amelia Paralegal','Paralegal',35000),
+(43,'Benjamin IT','IT Support',34000),
+(44,'Charlotte Secretary','Secretary',33000),
+(45,'Elijah Paralegal','Paralegal',32000),
+(46,'Harper IT','IT Support',31000),
+(47,'Alexander Secretary','Secretary',30000),
+(48,'Evelyn Paralegal','Paralegal',29000),
+(49,'Mason IT','IT Support',28000),
+(50,'Abigail Secretary','Secretary',27000);
+
+
+
+
+
+--1. Attorneys
+
+CREATE TABLE HR.AttorneyMatters (
+    AttorneyID INT,
+    MatterID INT,
+    PRIMARY KEY (AttorneyID, MatterID)
+);
+
+-- Partners are also attorneys
+
+GRANT SELECT, INSERT, UPDATE ON Clients.ContactInfo TO Attorneys;
+GRANT SELECT, INSERT, UPDATE ON Clients.Matters TO Attorneys;
+GRANT SELECT, INSERT, UPDATE ON Cases.CaseDetails TO Attorneys;
+GRANT SELECT, INSERT, UPDATE ON Cases.CaseNotes TO Attorneys;
+
+
+GRANT SELECT, INSERT ON Documents.Docs TO Attorneys;
+GRANT SELECT ON Documents.DocAccess TO Attorneys;
+
+GRANT SELECT, INSERT ON Billing.TimeEntries TO Attorneys;
+
+
+-- Prevent access to salaries
+DENY SELECT ON HR.Attorneys TO Attorneys;
+DENY SELECT ON HR.SupportStaff TO Attorneys;
+
+-- Prevent access to invoices (optional)
+DENY SELECT ON Billing.Invoices TO Attorneys;
+
+
+DENY DELETE ON Clients.ContactInfo TO Attorneys;
+DENY DELETE ON Clients.Matters TO Attorneys;
+DENY DELETE ON Cases.CaseDetails TO Attorneys;
+DENY DELETE ON Cases.CaseNotes TO Attorneys;
+DENY DELETE ON Documents.Docs TO Attorneys;
+DENY DELETE ON Billing.TimeEntries TO Attorneys;
+
+
+SELECT * FROM Clients.ContactInfo;
+
+
+
+
+
+
+---2. Paralegals
+GRANT SELECT ON Clients.ContactInfo TO Paralegals;
+GRANT SELECT ON Clients.Matters TO Paralegals;
+GRANT SELECT ON Cases.CaseDetails TO Paralegals;
+GRANT SELECT ON Cases.CaseNotes TO Paralegals;
+
+
+GRANT SELECT, INSERT, UPDATE ON Documents.Docs TO Paralegals;
+GRANT SELECT ON Documents.DocAccess TO Paralegals;
+
+DENY INSERT, UPDATE, DELETE ON Cases.CaseNotes TO Paralegals;
+
+DENY SELECT, INSERT, UPDATE, DELETE ON Billing.TimeEntries TO Paralegals;
+
+
+DENY SELECT ON HR.Attorneys TO Paralegals;
+DENY SELECT ON HR.SupportStaff TO Paralegals;
+
+
+---3. Partners
+GRANT SELECT, INSERT, UPDATE ON Clients.ContactInfo TO Partners;
+GRANT SELECT, INSERT, UPDATE ON Clients.Matters TO Partners;
+GRANT SELECT, INSERT, UPDATE ON Cases.CaseDetails TO Partners;
+GRANT SELECT, INSERT, UPDATE ON Cases.CaseNotes TO Partners;
+
+GRANT SELECT, INSERT, UPDATE ON Documents.Docs TO Partners;
+GRANT SELECT, INSERT, UPDATE ON Documents.DocAccess TO Partners;
+
+
+GRANT SELECT, INSERT, UPDATE ON Billing.TimeEntries TO Partners;
+GRANT SELECT, INSERT, UPDATE ON Billing.Invoices TO Partners;
+
+
+GRANT SELECT ON HR.Attorneys TO Partners;
+
+
+-- Prevent partners from modifying HR salary data
+DENY INSERT, UPDATE, DELETE ON HR.Attorneys TO Partners;
+DENY INSERT, UPDATE, DELETE ON HR.SupportStaff TO Partners;
+
+DENY DELETE ON Clients.ContactInfo TO Partners;
+DENY DELETE ON Clients.Matters TO Partners;
+DENY DELETE ON Cases.CaseDetails TO Partners;
+DENY DELETE ON Billing.Invoices TO Partners;
+
+
+
+
+
+--4. IT Administrators
+-- Allow backup operations
+GRANT BACKUP DATABASE TO ITAdmins;
+GRANT BACKUP LOG TO ITAdmins;
+
+-- Deny access to all client data
+DENY SELECT, INSERT, UPDATE, DELETE ON SCHEMA::Clients TO ITAdmins;
+
+-- Deny access to case data
+DENY SELECT, INSERT, UPDATE, DELETE ON SCHEMA::Cases TO ITAdmins;
+
+-- Deny access to documents
+DENY SELECT, INSERT, UPDATE, DELETE ON SCHEMA::Documents TO ITAdmins;
+
+
+DENY SELECT ON SCHEMA::Billing TO ITAdmins;
+DENY SELECT ON SCHEMA::HR TO ITAdmins;
+
+
+--5. Accountants
+GRANT SELECT, INSERT, UPDATE ON SCHEMA::Billing TO Accountants;
+
+GRANT SELECT ON Clients.ContactInfo TO Accountants;
+GRANT SELECT ON Clients.Matters TO Accountants;
+
+
+DENY SELECT ON Cases.CaseDetails TO Accountants;
+DENY SELECT ON Cases.CaseNotes TO Accountants;
+
+
+DENY SELECT, INSERT, UPDATE, DELETE ON SCHEMA::Documents TO Accountants;
+
+DENY SELECT ON HR.Attorneys TO Accountants;
+DENY SELECT ON HR.SupportStaff TO Accountants;
+
+
+--Attorney
+EXECUTE AS USER = 'Attorney_Sheldon';
+
+SELECT * FROM Clients.ContactInfo;
+SELECT * FROM Clients.Matters;
+
+UPDATE Clients.Matters
+SET Status = 'Closed'
+WHERE MatterID = 1;
+
+INSERT INTO Document.Docs VALUES (51,1,'NewDoc.pdf',NULL,GETDATE());
+
+INSERT INTO Billing.TimeEntries VALUES (51,1,1,2.0,500,'Consultation');
+
+SELECT * FROM Billing.TimeEntries;  -- should be LIMITED (own only)
+SELECT * FROM HR.Attorneys;         -- should FAIL
+
+REVERT;
+
+
+
+EXECUTE AS USER = 'Accountant_Kripke';
+
+SELECT * FROM Billing.TimeEntries;
+SELECT * FROM Billing.Invoices;
+
+SELECT ClientID, Description FROM Clients.Matters;
+
+UPDATE Billing.Invoices
+SET Amount = 5000
+WHERE InvoiceID = 1;
+
+SELECT * FROM Cases.CaseNotes;   -- should FAIL
+SELECT * FROM Document.Docs;    -- should FAIL
+SELECT * FROM HR.Attorneys;      -- should FAIL
+
+REVERT;
+
+
+EXECUTE AS USER = 'Paralegal_Penny';
+
+SELECT * FROM Clients.ContactInfo;
+SELECT * FROM Clients.Matters;
+
+INSERT INTO Document.Docs VALUES (52,2,'ParalegalDoc.pdf',NULL,GETDATE());
+
+UPDATE Document.Docs
+SET DocName = 'UpdatedDoc.pdf'
+WHERE DocID = 2; --should FAIL
+
+UPDATE Cases.CaseNotes
+SET Notes = 'Edited Note'
+WHERE CaseNoteID = 1;   -- should FAIL
+
+INSERT INTO Billing.TimeEntries VALUES (52,2,2,2.0,500,'Work'); -- should FAIL
+
+SELECT * FROM HR.Attorneys; -- should FAIL
+
+REVERT;
+
+
+
+
+
