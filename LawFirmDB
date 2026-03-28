@@ -771,7 +771,7 @@ SELECT * FROM HR.Attorneys;         -- should FAIL
 REVERT;
 
 
-
+--Accountants
 EXECUTE AS USER = 'Accountant_Kripke';
 
 SELECT * FROM Billing.TimeEntries;
@@ -789,7 +789,7 @@ SELECT * FROM HR.Attorneys;      -- should FAIL
 
 REVERT;
 
-
+--Paralegals
 EXECUTE AS USER = 'Paralegal_Penny';
 
 SELECT * FROM Clients.ContactInfo;
@@ -812,6 +812,35 @@ SELECT * FROM HR.Attorneys; -- should FAIL
 REVERT;
 
 
+--IT ADMINISTRATION
+EXECUTE AS USER = 'IT_Stuart';
 
+BACKUP DATABASE LawFirmDB
+TO DISK = 'C:\Backup\LawFirmDB.bak';
+
+SELECT * FROM Clients.ContactInfo;  -- should FAIL
+SELECT * FROM Cases.CaseDetails;    -- should FAIL
+SELECT * FROM Documents.Docs;       -- should FAIL
+
+REVERT;
+
+
+--PARTNERS
+EXECUTE AS USER = 'Partner_Lesley';
+
+SELECT * FROM Clients.ContactInfo;
+SELECT * FROM Clients.Matters;
+SELECT * FROM Cases.CaseDetails;
+SELECT * FROM Cases.CaseNotes;
+SELECT * FROM Documents.Docs;
+SELECT * FROM Billing.TimeEntries;
+SELECT * FROM Billing.Invoices;
+SELECT * FROM HR.Attorneys;
+
+UPDATE HR.Attorneys
+SET Salary = 200000
+WHERE AttorneyID = 1;
+
+REVERT;
 
 
