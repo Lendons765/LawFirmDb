@@ -898,3 +898,60 @@ WHERE AttorneyID = 1;
 REVERT;
 
 
+
+
+
+-- PARALEGALS
+GRANT SELECT ON Clients.ContactInfo TO Paralegals;
+GRANT SELECT ON Clients.Matters TO Paralegals;
+GRANT SELECT ON Cases.CaseDetails TO Paralegals;
+GRANT SELECT ON Cases.CaseNotes TO Paralegals;
+
+GRANT SELECT, INSERT, UPDATE ON Documents.Docs TO Paralegals;
+GRANT SELECT ON Documents.DocAccess TO Paralegals;
+
+DENY INSERT, UPDATE, DELETE ON Cases.CaseNotes TO Paralegals;
+
+DENY SELECT, INSERT, UPDATE, DELETE ON Billing.TimeEntries TO Paralegals;
+DENY SELECT, INSERT, UPDATE, DELETE ON Billing.Invoices TO Paralegals;
+
+DENY SELECT ON HR.Attorneys TO Paralegals;
+DENY SELECT ON HR.SupportStaff TO Paralegals;
+
+—SECURITY REQUIREMENTS
+
+EXECUTE AS USER = 'Paralegal_Penny';
+
+    -- Should SUCCEED: read client and case info
+    SELECT * FROM Clients.ContactInfo;
+    SELECT * FROM Clients.Matters;
+    SELECT * FROM Cases.CaseDetails;
+    SELECT * FROM Cases.CaseNotes;
+
+    -- Should SUCCEED: insert and update documents
+    INSERT INTO Documents.Docs (DocID, MatterID, DocName, DocContent, CreatedDate)
+    VALUES (52, 2, 'ParalegalDoc.pdf', NULL, GETDATE());
+
+    UPDATE Documents.Docs
+    SET DocName = 'UpdatedDoc.pdf'
+    WHERE DocID = 2;
+
+    -- Should FAIL: cannot modify case notes
+    INSERT INTO Cases.CaseNotes (NoteID, CaseID, AttorneyID, NoteText, NoteDate)
+    VALUES (51, 1, 1, 'Unauthorized edit', GETDATE());
+
+    UPDATE Cases.CaseNotes
+    SET NoteText = 'Unauthorized edit'
+    WHERE NoteID = 1;
+
+    -- Should FAIL: no billing access
+    SELECT * FROM Billing.TimeEntries;
+    INSERT INTO Billing.TimeEntries
+    VALUES (52, 1, 2, 2.0, 500, 'Unauthorized entry');
+
+    -- Should FAIL: no salary info
+    SELECT * FROM HR.Attorneys;
+    SELECT * FROM HR.SupportStaff;
+
+REVERT;
+
